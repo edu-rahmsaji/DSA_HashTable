@@ -1,0 +1,10 @@
+https://en.wikipedia.org/wiki/Linked_list#:~:text=In%20computer%20science%2C%20a%20linked,which%20together%20represent%20a%20sequence.
+Type hints : https://stackoverflow.com/a/50768146
+Class print : https://stackoverflow.com/a/1535336
+CS312 Lecture 21 Hash functions : https://www.cs.cornell.edu/courses/cs312/2008sp/lectures/lec21.html#:~:text=With%20modular%20hashing%2C%20the%20hash,lowest%2Dorder%20bits%20of%20k.
+Hash table : https://en.wikipedia.org/wiki/Hash_table
+Doc strings examples : https://stackoverflow.com/questions/10017776/where-can-i-find-proper-examples-of-the-pep-257-docstring-conventions
+Writing unit tests : https://www.dataquest.io/blog/unit-tests-python/
+String char code : https://stackoverflow.com/a/8609051/20892950
+Hash function : https://stackoverflow.com/a/2624210/20892950
+__init__.py : https://stackoverflow.com/questions/448271/what-is-init-py-for
