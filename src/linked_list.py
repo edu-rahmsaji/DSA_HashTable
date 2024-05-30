@@ -1,114 +1,232 @@
 from __future__ import annotations
 from typing import Any, List, Tuple
+from node import Node
 
 class LinkedList:
     def __init__(self) -> None:
-        """ A linked list. """
+        """ Initialization of an empty linked list. """
         self.__head: Node | None = None
         self.__tail: Node | None = None
 
-    def insert(self, key: str, value: Any) -> bool:
-        """ Inserts a new node at the end of the linked list. """
-        if self.__head is None:
-            self.__head = Node(key, value)
-            self.__tail = self.__head
-        else:
-            lastTail = self.__tail
-            self.__tail = Node(key, value, lastTail)
-            lastTail.next = self.__tail
-
-        return True
-
-    def update(self, key: str, value: Any) -> bool:
-        """ Updates a given key with the new value if found and returns True, otherwise returns False. """
-        for node in self.__as_iterable():
-            if node.key == key:
-                node.value = value
-                return True
+    def insert(self, key: str, value: Any | None) -> None:
+        """
+        Inserts a new node at the end of the linked list.
         
-        return False
-    
-    def remove(self, key: str) -> bool:
-        """
-        Removes a node containing the given key.
+        Parameters :
+            - key (str) : The key of the value to add.
+            - value (Any | None) : The value to add in the linked list.
+        
+        Returns :
+            None is returned.
+            
+        Behavior - The key is not of type string :
+            Preconditions :
+                The key is not of type string.
+            Postconditions :
+                A type error is raised.
+            Invariants :
+                The linked list is not modified.
 
-        Returns:
-            - True if a node with the given key was found and removed, otherwise False.
+        Behavior - The key is of type string :
+            Preconditions :
+                The key is of type string.
+            Postconditions :
+                The key-value is inserted in the linked list as the new tail.
+                None is returned.
         """
-        for node in self.__as_iterable():
+        if key is None: # type: ignore[reportOptionalMemberAccess]
+            raise TypeError("Key is None")
+            
+        if type(key) != str:
+            raise TypeError("Key is expected to be of type string")
+        
+        new_node = Node((key, value))
+        if self.__head is None:
+            self.__head = new_node
+            self.__tail = new_node
+        else:
+            self.__tail.next = new_node # type: ignore[reportOptionalMemberAccess]
+            new_node.prev = self.__tail
+            self.__tail = new_node
+
+    def update(self, key: str, value: Any | None) -> Any | None:
+        """
+        Updates a given key with the new value.
+        
+        Parameters :
+            - key (str) : The key of the value to update.
+            - value (Any | None) : The new value of the key.
+        
+        Returns :
+            The old value is returned.
+            
+        Behavior - The key is not of type string :
+            Preconditions :
+                The key is not of type string.
+            Postconditions :
+                A type error is raised.
+            Invariants :
+                The linked list is not modified.
+
+        Behavior - The key is of type string :
+            Preconditions :
+                The key is of type string.
+            Postconditions :
+                The value of the key is updated.
+                The old value of the key is returned.
+        """
+        if key is None: # type: ignore[reportOptionalMemberAccess]
+            raise TypeError("Key is None")
+            
+        if type(key) != str:
+            raise TypeError("Key is expected to be of type string")
+        
+        for node in self.__as_list():
             if node.key == key:
-                if node.hasPrev() and node.hasNext():   # In the middle
-                    node.prev.next = node.next
-                    node.next.prev = node.prev
-                elif node.hasPrev():                    # Last element
+                old_value = node.value
+                node.value = value
+                return old_value
+    
+    def remove(self, key: str) -> Any | None:
+        """
+        Removes the key-value corresponding to the given key.
+        
+        Parameters :
+            - key (str) : The key to remove.
+        
+        Returns :
+            If the key exists, the old value is returned. Else, None is returned.
+            
+        Behavior - The key is not of type string :
+            Preconditions :
+                The key is not of type string.
+            Postconditions :
+                A type error is raised.
+            Invariants :
+                The linked list is not modified.
+
+        Behavior - The key doesn't exist :
+            Preconditions :
+                The key doesn't exist in the linked list.
+            Postconditions :
+                None is returned.
+            Invariants :
+                The linked list is not modified.
+
+        Behavior - The key exists :
+            Preconditions :
+                The key exists in the linked list.
+            Postconditions :
+                The key-value corresponding to the given key is removed from the linked list.
+                The old value is returned.
+        """
+        if key is None: # type: ignore[reportOptionalMemberAccess]
+            raise TypeError("Key is expected to be of type string, None received.")
+        
+        if type(key) != str:
+            raise TypeError("Key is expected to be of type string.")
+        
+        for node in self.__as_list():
+            if node.key == key:
+                if node.has_prev() and node.has_next():   # In the middle
+                    node.prev.next = node.next # type: ignore[reportOptionalMemberAccess]
+                    node.next.prev = node.prev # type: ignore[reportOptionalMemberAccess]
+                elif node.has_prev():                    # Last element
                     self.__tail = node.prev
-                    self.__tail.next = None
-                elif node.hasNext():                    # First element
+                    self.__tail.next = None # type: ignore[reportOptionalMemberAccess]
+                elif node.has_next():                    # First element
                     self.__head = node.next
-                    self.__head.prev = None
+                    self.__head.prev = None # type: ignore[reportOptionalMemberAccess]
                 else:                                   # Only element
                     self.__head = None
                     self.__tail = None
 
-                del node
-                return True
+                return node.value
 
-        return False    
+    def get(self, key: str, default: Any | None = None) -> Any | None:
+        """
+        Retrieves the value with the given key, or a default value if the key doesn't exist.
+        
+        Parameters :
+            - key (str) : The key of the value to retrieve.
+            - default (Any | None) : A default value to return if the key doesn't exist (Optional). Defaults to None.
+        
+        Returns :
+            If the key exists, the value of the key is returned. Else, the default value is returned.
+            
+        Behavior - The key is not of type string :
+            Preconditions :
+                The key is not of type string.
+            Postconditions :
+                A type error is raised.
 
-    def get(self, key: str, default: Any = None) -> Any | None:
+        Behavior - The key doesn't exist :
+            Preconditions :
+                The key doesn't exist in the linked list.
+            Postconditions :
+                If set, the default value is returned, otherwise returns None.
+
+        Behavior - The key exists :
+            Preconditions :
+                The key exists in the linked list.
+            Postconditions :
+                The value of given key is returned from the linked list.
         """
-        Returns the value with the given key, or a default value if the key doesn't exist.
-        """
-        for node in self.__as_iterable():
+        if key is None: # type: ignore[reportOptionalMemberAccess]
+            raise TypeError("Key is expected to be of type string, None received.")
+        
+        if type(key) != str:
+            raise TypeError("Key is expected to be of type string.")
+            
+        for node in self.__as_list():
             if node.key == key:
                 return node.value
             
         return default
 
-    def __as_iterable(self) -> List[Node]:
-        """ Returns the nodes as a list. """
-        iterable: List[Node] = []
+    def __as_list(self) -> List[Node]:
+        """ Returns the nodes of the linked list as a list. """
+        nodes_list: List[Node] = []
+        current_node = self.__head
 
-        if self.__head is not None:
-            lastNode = self.__head
+        while current_node is not None:
+            nodes_list.append(current_node)
+            current_node = current_node.next
 
-            while lastNode.hasNext():
-                lastNode = lastNode.next
-                iterable.append(lastNode)
-            else:
-                # Last node was not added
-                iterable.append(lastNode)
-
-        return iterable
+        return nodes_list
 
     def size(self) -> int:
         """ Returns the number of elements inside the linked list. """
-        return len(self.__as_iterable())
+        return len(self.__as_list())
+    
+    def is_empty(self) -> bool:
+        """ Checks if the linked list is empty or not. """
+        return self.size() == 0
     
     def keys(self) -> List[str]:
-        """ Returns the keys of the linked list. """
-        keys = []
+        """ Returns the keys of the linked list as a list. """
+        keys: List[str] = []
 
-        for node in self.__as_iterable():
+        for node in self.__as_list():
             keys.append(node.key)
 
         return keys
     
     def values(self) -> List[Any]:
-        """ Returns the values of the linked list. """
-        values = []
+        """ Returns the values of the linked list as a list. """
+        values: List[Any] = []
 
-        for node in self.__as_iterable():
+        for node in self.__as_list():
             values.append(node.value)
 
         return values
     
     def entries(self) -> List[Tuple[str, Any]]:
-        """ Returns the key-value pairs of the linked list. """
-        entries = []
+        """ Returns the key-value pairs of the linked list as a list. """
+        entries: List[Tuple[str, Any]] = []
 
-        for node in self.__as_iterable():
-            entries.append([node.key, node.value])
+        for node in self.__as_list():
+            entries.append((node.key, node.value))
 
         return entries
     
@@ -117,30 +235,45 @@ class LinkedList:
         self.__head = None
         self.__tail = None
 
-        for node in self.__as_iterable():
-            del node
-
     def clone(self) -> LinkedList:
-        """ Clones the current linked list. """
+        """ Deeply clones the current linked list as a new one. """
         clone = LinkedList()
         
-        for node in self.__as_iterable():
+        for node in self.__as_list():
             clone.insert(node.key, node.value)
 
         return clone
+    
+    def contains(self, key: str) -> bool:
+        """
+        Checks if a given key exists in the linked list.
+        
+        Parameters :
+            - key (str) : The key to check.
+        
+        Returns :
+            True if the key exists in the linked list, False otherwise.
+            
+        Behavior - The key is not of type string :
+            Preconditions :
+                The key is not of type string.
+            Postconditions :
+                A type error is raised.
 
-class Node:
-    def __init__(self, key: str, value: Any | None, prev: Node | None = None, next: Node | None = None) -> None:
-        """ An element of a linked list. """
-        self.key = key
-        self.value = value
-        self.prev = prev
-        self.next = next
+        Behavior - The key doesn't exist :
+            Preconditions :
+                The key doesn't exist in the linked list.
+            Postconditions :
+                False is returned.
 
-    def hasPrev(self) -> bool:
-        """ Checks if the current node references a previous node. """
-        return self.prev is not None
-
-    def hasNext(self) -> bool:
-        """ Checks if the current node references a next node. """
-        return self.next is not None
+        Behavior - The key exists :
+            Preconditions :
+                The key exists in the linked list.
+            Postconditions :
+                True is returned.
+        """
+        for k in self.keys():
+            if k == key:
+                return True
+            
+        return False

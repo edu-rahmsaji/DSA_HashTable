@@ -8,3 +8,6 @@ Writing unit tests : https://www.dataquest.io/blog/unit-tests-python/
 String char code : https://stackoverflow.com/a/8609051/20892950
 Hash function : https://stackoverflow.com/a/2624210/20892950
 __init__.py : https://stackoverflow.com/questions/448271/what-is-init-py-for
+Makefile with python : https://earthly.dev/blog/python-makefile/
+Recursively remove folder in windows : https://stackoverflow.com/a/25554347/20892950
+Linked List : https://en.wikipedia.org/wiki/Linked_list
